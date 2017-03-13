@@ -3,6 +3,8 @@
 #include "Eigen/Dense"
 #include <iostream>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "IncompatibleTypes"
 using namespace std;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -22,10 +24,6 @@ FusionEKF::FusionEKF() {
   H_laser_ = MatrixXd(2, 4);
   Hj_ = MatrixXd(3, 4);
 
-  /**
-  TODO:
-    * Finish initializing the FusionEKF.
-  */
   //create a 4D state vector, we don't know yet the values of the x state
   ekf_.x_ = VectorXd(4);
 
@@ -72,12 +70,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-    /**
-    TODO:
-      * Initialize the state ekf_.x_ with the first measurement.
-      * Create the covariance matrix.
-      * Remember: you'll need to convert radar from polar to cartesian coordinates.
-    */
 
     //state covariance matrix P
     ekf_.P_ = MatrixXd(4, 4);
@@ -116,41 +108,29 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Prediction
    ****************************************************************************/
 
-  /**
-   TODO:
-     * Update the state transition matrix F according to the new elapsed time.
-      - Time is measured in seconds.
-     * Update the process noise covariance matrix.
-   */
   //compute the time elapsed between the current and previous measurements
   float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
 
-  //1. Modify the F matrix so that the time is integrated
+  // Modify the F matrix so that the time is integrated
   ekf_.F_ << 1, 0, dt, 0,
             0, 1, 0, dt,
             0, 0, 1, 0,
             0, 0, 0, 1;
 
-  //2. Set the process covariance matrix Q
+  // Set the process covariance matrix Q
   ekf_.Q_ = MatrixXd(4, 4);
   ekf_.Q_ <<  (pow(dt, 4)/4)*noise_ax, 0, (pow(dt, 3)/2)*noise_ax, 0,
           0, (pow(dt, 4)/4)*noise_ay, 0, (pow(dt, 3)/2)*noise_ay,
           (pow(dt, 3)/2)*noise_ax, 0, (pow(dt, 2))*noise_ax, 0,
           0, (pow(dt, 3)/2)*noise_ay, 0, (pow(dt, 2))*noise_ay;
 
-  //3. Call the Kalman Filter predict() function
+  // Call the Kalman Filter predict() function
   ekf_.Predict();
 
   /*****************************************************************************
    *  Update
    ****************************************************************************/
-
-  /**
-   TODO:
-     * Use the sensor type to perform the update step.
-     * Update the state and covariance matrices.
-   */
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
@@ -162,6 +142,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     double y = ro * std::sin(theta);
 
     VectorXd cartesian_measurement = VectorXd(4);
+    //TODO determine whether velocity component could be more accurate
     cartesian_measurement << x, y, ekf_.x_[2],  ekf_.x_[3];
     Hj_ = tools.CalculateJacobian(cartesian_measurement);
     ekf_.H_ = Hj_;
@@ -178,3 +159,5 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   cout << "x_ = " << ekf_.x_ << endl;
   cout << "P_ = " << ekf_.P_ << endl;
 }
+
+#pragma clang diagnostic pop
