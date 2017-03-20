@@ -55,7 +55,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 
     //check division by zero
     if(px == 0 || py == 0) {
-        throw std::logic_error("Division by zero error calculation jacobian");
+        throw std::invalid_argument("Division by zero error calculation jacobian");
     }
 
     //compute the Jacobian matrix
@@ -82,7 +82,7 @@ VectorXd Tools::CalculateNonlinearH(const VectorXd& x_state) {
 
     //check division by zero
     if(px == 0) {
-        throw std::logic_error("Division by zero error calculation nonlinear H");
+        throw std::invalid_argument("Division by zero error calculation nonlinear H");
     }
 
     //compute the polar coordinates
