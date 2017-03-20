@@ -1,5 +1,6 @@
 #include <iostream>
 #include "tools.h"
+#include <math.h>
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -53,7 +54,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
     float vy = x_state(3);
 
     //check division by zero
-    if(px == 0 && py == 0) {
+    if(px == 0 || py == 0) {
         throw std::logic_error("Division by zero error calculation jacobian");
     }
 
@@ -69,4 +70,46 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
             py*bigOne, px*bigOne, px/px2Ppy2Sq, py/px2Ppy2Sq;
 
     return Hj;
+}
+
+VectorXd Tools::CalculateNonlinearH(const VectorXd& x_state) {
+    VectorXd h_non_linear(3,1);
+    //recover state parameters
+    float px = x_state(0);
+    float py = x_state(1);
+    float vx = x_state(2);
+    float vy = x_state(3);
+
+    //check division by zero
+    if(px == 0) {
+        throw std::logic_error("Division by zero error calculation nonlinear H");
+    }
+
+    //compute the polar coordinates
+    float px2 = px * px;
+    float py2 = py * py;
+    float px2Ppy2 = px2 + py2;
+    float px2Ppy2Sq = sqrt(px2Ppy2);
+    float bigOne = (vx*px + vy*py)/px2Ppy2Sq;
+
+    h_non_linear << px2Ppy2Sq,
+        atan(py/px),
+        bigOne;
+
+    return h_non_linear;
+}
+
+// From: http://stackoverflow.com/a/29871193/1321129
+/* change to `float/fmodf` or `long double/fmodl` or `int/%` as appropriate */
+/* wrap x -> [0,max) */
+double Tools::wrapMax(double x, double max)
+{
+  /* integer math: `(max + x % max) % max` */
+  return fmod(max + fmod(x, max), max);
+}
+
+/* wrap x -> [min,max) */
+double Tools::wrapMinMax(double x, double min, double max)
+{
+  return min + wrapMax(x - min, max - min);
 }

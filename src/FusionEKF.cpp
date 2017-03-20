@@ -55,8 +55,9 @@ FusionEKF::FusionEKF() {
               0, 0, 0, 1;
 
   //set the acceleration noise components
-  noise_ax = 5;
-  noise_ay = 5;
+  noise_ax = 9;
+  noise_ay = 9;
+
   tools = Tools();
 }
 
@@ -74,15 +75,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     //state covariance matrix P
     ekf_.P_ = MatrixXd(4, 4);
     ekf_.P_ << 1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1000, 0,
-            0, 0, 0, 1000;
+              0, 1, 0, 0,
+              0, 0, 1000, 0,
+              0, 0, 0, 1000;
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       //Convert radar from polar to cartesian coordinates and initialize state.
       double ro = measurement_pack.raw_measurements_[0];
-      double theta = measurement_pack.raw_measurements_[0];
-      double ro_dot = measurement_pack.raw_measurements_[0];
+      double theta = measurement_pack.raw_measurements_[1];
+      double ro_dot = measurement_pack.raw_measurements_[2];
 
       double x = ro * std::cos(theta);
       double y = ro * std::sin(theta);
@@ -94,7 +95,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       //Initialize state.
-      ekf_.x_ = measurement_pack.raw_measurements_;
+      ekf_.x_ << measurement_pack.raw_measurements_[0],
+          measurement_pack.raw_measurements_[1],
+          0,
+          0;
     }
 
     previous_timestamp_ = measurement_pack.timestamp_;
@@ -134,25 +138,18 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-    double ro = measurement_pack.raw_measurements_[0];
-    double theta = measurement_pack.raw_measurements_[0];
-    double ro_dot = measurement_pack.raw_measurements_[0];
-
-    double x = ro * std::cos(theta);
-    double y = ro * std::sin(theta);
-
-    VectorXd cartesian_measurement = VectorXd(4);
-    //TODO determine whether velocity component could be more accurate
-    cartesian_measurement << x, y, ekf_.x_[2],  ekf_.x_[3];
-    Hj_ = tools.CalculateJacobian(cartesian_measurement);
+    Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.H_ = Hj_;
     ekf_.R_ = R_radar_;
-    ekf_.Update(measurement_pack.raw_measurements_);
+    ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // Laser updates
     ekf_.H_ = H_laser_;
     ekf_.R_ = R_laser_;
-    ekf_.Update(measurement_pack.raw_measurements_);
+    VectorXd z(2);
+    z << measurement_pack.raw_measurements_[0],
+        measurement_pack.raw_measurements_[1];
+    ekf_.Update(z);
   }
 
   // print the output

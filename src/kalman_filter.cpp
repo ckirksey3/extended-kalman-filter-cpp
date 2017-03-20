@@ -1,9 +1,13 @@
 #include "kalman_filter.h"
+#include "tools.h"
+#include <math.h>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-KalmanFilter::KalmanFilter() {}
+KalmanFilter::KalmanFilter() {
+  tools = Tools();
+}
 
 KalmanFilter::~KalmanFilter() {}
 
@@ -40,8 +44,18 @@ void KalmanFilter::Update(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
+  VectorXd z_pred = tools.CalculateNonlinearH(x_);
+  VectorXd y = z - z_pred;
+  y(1) = tools.wrapMinMax(y(1), -M_PI, M_PI);
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd Si = S.inverse();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;
+
+  //new estimate
+  x_ = x_ + (K * y);
+  long x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_ = (I - K * H_) * P_;
 }
