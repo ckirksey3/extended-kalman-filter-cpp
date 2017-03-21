@@ -1,6 +1,6 @@
 # Extended Kalman Filter
-This project fuses the position and velocity measurements of obstacles from rader and lasar measurements to track the obstacles through time. It manages both cartesian and polor coordinates. 
 ---
+This project fuses the position and velocity measurements of obstacles from rader and lasar measurements to track the obstacles through time. It manages both cartesian and polor coordinates. 
 
 ## Dependencies
 
