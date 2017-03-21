@@ -25,7 +25,7 @@ This project fuses the position and velocity measurements of obstacles from rade
 4. Run it: `./ExtendedKF path/to/input.txt path/to/output.txt`. You can find
    some sample inputs in 'data/'.
     - eg. `./ExtendedKF ../data/sample-laser-radar-measurement-data-1.txt output.txt`
-5. In order to graph your results, enter this directory and run 'jupyter notebook'. Then execute each cell in succession by pressing shift + enter. You can also run the whole notebook in a single step by clicking on the menu Cell -> Run All.
+5. In order to graph your results, enter this directory and run `jupyter notebook`. Then execute each cell in succession by pressing shift + enter. You can also run the whole notebook in a single step by clicking on the menu Cell -> Run All.
 
 ## Results
 
