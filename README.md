@@ -1,7 +1,6 @@
-# Extended Kalman Filter Project Starter Code
-Self-Driving Car Engineer Nanodegree Program
-
+# Extended Kalman Filter
 ---
+This project fuses the position and velocity measurements of obstacles from rader and lasar measurements to track the obstacles through time. It manages both cartesian and polor coordinates. 
 
 ## Dependencies
 
@@ -13,8 +12,10 @@ Self-Driving Car Engineer Nanodegree Program
   * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
 * gcc/g++ >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
+  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
+* jupyter
+  * All: [install instructions](http://jupyter.readthedocs.io/en/latest/install.html)
 
 ## Basic Build Instructions
 
@@ -24,67 +25,18 @@ Self-Driving Car Engineer Nanodegree Program
 4. Run it: `./ExtendedKF path/to/input.txt path/to/output.txt`. You can find
    some sample inputs in 'data/'.
     - eg. `./ExtendedKF ../data/sample-laser-radar-measurement-data-1.txt output.txt`
+5. In order to graph your results, enter this directory and run `jupyter notebook`. Then execute each cell in succession by pressing shift + enter. You can also run the whole notebook in a single step by clicking on the menu Cell -> Run All.
 
-## Editor Settings
+## Results
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+The Kalman Filter was able to track obstacles fairly accuractely with the sample measurements/ground truth that I used. 
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+The position predictions were most accurate across different datasets. 
+![Tracking of Position Over Time (A)](resources/pos1_graph.png?raw=true "Data Analysis")
 
-## Code Style
+![Tracking of Position Over Time (B)](resources/pos_graph.png?raw=true "Data Analysis")
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+There was some noise in the velocity predictions, mostly caused by the radar measurements.
+![Tracking of Velocity Over Time (A)](resources/vx1_graph.png?raw=true "Data Analysis")
 
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
-
-## Project Instructions and Rubric
-
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/12dd29d8-2755-4b1b-8e03-e8f16796bea8)
-for instructions and the project rubric.
-
-## Hints!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make.
+![Tracking of Velocity Over Time (B)](resources/vx_graph.png?raw=true "Data Analysis")
